@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const inquirer = require('inquirer');
 const fs = require('fs');
 const rif = require('replace-in-file');
@@ -61,16 +63,17 @@ function generate(answers) {
   fs.mkdirSync(projectDir);
 
   // Getting the templates
-  const templateDir = `templates/${answers.tsEnabled ? 'ts' : 'js'}`;
+  const templateRoot = `${__dirname}/templates`
+  const templateDir = `${templateRoot}/${answers.tsEnabled ? 'ts' : 'js'}`;
   recurCpTemplates(templateDir, answers.name);
-  recurCpTemplates('templates/common', answers.name);
+  recurCpTemplates(`${templateRoot}/common`, answers.name);
 
   // Dev dependencies
   const devDep = [ 'webpack', 'webpack-cli', 'codecov', 'eslint' ];
 
   if (answers.tsEnabled) {
     devDep.push('typescript', 'ts-loader');
-    moveFile('templates/other/tsconfig.json', `${projectDir}/tsconfig.json`);
+    moveFile(`${templateRoot}/other/tsconfig.json`, `${projectDir}/tsconfig.json`);
   }
 
   // Define the test command and the associated dependencies
@@ -80,7 +83,7 @@ function generate(answers) {
     devDep.push('jest', '@babel/plugin-transform-modules-commonjs');
     if (answers.tsEnabled) {
       devDep.push('ts-jest', '@types/jest');
-      moveFile('templates/other/jest.config.js', `${projectDir}/jest.config.js`);
+      moveFile(`${templateRoot}/other/jest.config.js`, `${projectDir}/jest.config.js`);
     }
   } else if (answers.testFwk === 'mocha') {
     testCmd = `mocha --recursive './tests/**.test.js'`;
@@ -125,7 +128,7 @@ function generate(answers) {
   }
 
   if(webpackTemplateFile) {
-    moveFile(`templates/other/${webpackTemplateFile}`, `${projectDir}/webpack.config.js`);
+    moveFile(`${templateRoot}/other/${webpackTemplateFile}`, `${projectDir}/webpack.config.js`);
     rif.sync({
       files: `${projectDir}/webpack.config.js`,
       from: /project-name-replace/g,
@@ -161,12 +164,12 @@ function generate(answers) {
   
   // Create travis file
   if (answers.travisEnabled) {
-    moveFile(`templates/other/.travis.yml`, `${projectDir}/travis.yml`);
+    moveFile(`${templateRoot}/other/.travis.yml`, `${projectDir}/travis.yml`);
   }
 
   // Create babel file for transpiling (tests)
   if (answers.isLibrary) {
-    moveFile(`templates/other/.babelrc`, `${projectDir}/.babelrc`);
+    moveFile(`${templateRoot}/other/.babelrc`, `${projectDir}/.babelrc`);
   }
 }
 

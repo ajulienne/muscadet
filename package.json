@@ -16,5 +16,8 @@
   "dependencies": {
     "inquirer": "^7.0.3",
     "replace-in-file": "^5.0.2"
+  },
+  "bin": {
+    "muscadet": "./index.js"
   }
 }
