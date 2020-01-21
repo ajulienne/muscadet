@@ -1,0 +1,14 @@
+{
+    "name": "project-name-replace",
+    "version": "1.0.0",
+    "description": "project-desc-replace",
+    "main": "main-file-replace",
+    "scripts": {
+      "test": "test-command-replace",
+      "build": "build-command-replace"
+    },
+    "keywords": [],
+    "author": "author-replace",
+    "license": "ISC"
+  }
+  
