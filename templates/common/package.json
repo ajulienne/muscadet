@@ -4,11 +4,11 @@
     "description": "project-desc-replace",
     "main": "main-file-replace",
     "scripts": {
-      "test": "test-command-replace",
+      "test": "test-command-replace && codecov",
       "build": "build-command-replace"
     },
     "keywords": [],
     "author": "author-replace",
-    "license": "ISC"
+    "license": "MIT"
   }
   

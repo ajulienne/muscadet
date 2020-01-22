@@ -3,10 +3,7 @@ const path = require("path");
 module.exports = {
     entry: "./index.js",
     output: {
-        path: path.resolve(__dirname, "dist"),
-        filename: "project-name-replace.js",
-        library: "project-name-replace",
-        libraryTarget: "umd"
+        path: path.resolve(__dirname, "dist")
     },
     devtool: "source-map",
     rules: [

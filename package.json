@@ -4,7 +4,7 @@
   "description": "CLI to generate a bare JS or TS project.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "keywords": [
     "cli",
@@ -18,6 +18,15 @@
     "replace-in-file": "^5.0.2"
   },
   "bin": {
-    "muscadet": "./index.js"
+    "muscadet": "./src/index.js"
+  },
+  "devDependencies": {
+    "jest": "^25.1.0"
+  },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "<rootDir>/templates/",
+      "<rootDir>/node_modules/"
+    ]
   }
 }
