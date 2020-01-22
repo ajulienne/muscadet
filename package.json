@@ -11,6 +11,10 @@
     "generator",
     "typescript"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ajulienne/muscadet.git"
+  },
   "author": "Antoine Julienne",
   "license": "MIT",
   "dependencies": {
