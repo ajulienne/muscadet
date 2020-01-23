@@ -1,5 +1,6 @@
 const fs = require('fs');
 const exec = require('child_process').exec;
+const chalk = require('chalk');
 
 module.exports = {
     /**
@@ -87,12 +88,22 @@ module.exports = {
      * @param {*} targetDir Target directory to install the _node_modules_
      */
     installDependencies(devDependencies, targetDir) {
-        console.log('=> Installing NPM dependencies');
-        const install = exec(`npm install -D --prefix ${targetDir} ${devDependencies.join(' ')}`);
-    
-        install.on('close', () => {
-            console.log('=> Dependencies installed.');
-            console.log('==> Project generated!');
+        return new Promise((resolve, reject) => {
+            const install = exec(`npm install -D --prefix ${targetDir} ${devDependencies.join(' ')}`);
+        
+            install.on('close', (returnCode) => {
+                if (returnCode !== 0) {
+                    console.log(chalk.red('Installation failed'));
+                    reject();
+                    return;
+                }
+                resolve();
+            });
         });
+    },
+
+    quickstart(projectName) {
+        console.log(chalk.green('\nProject successfully generated!'));
+        console.log(`\nQuickstart :\n\tcd ${chalk.blue(projectName)}\n\tnpm run build\n`);
     }
 };

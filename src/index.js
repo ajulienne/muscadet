@@ -3,6 +3,7 @@
 const inquirer = require('inquirer');
 const fs = require('fs');
 const rif = require('replace-in-file');
+const chalk = require('chalk');
 
 const helpers = require('./helpers');
 
@@ -12,7 +13,15 @@ inquirer.prompt([
   {
     type: 'input',
     name: 'name',
-    message: 'Enter the name of your project:'
+    message: 'Enter the name of your project:',
+    validate: function(val) {
+      const npmPackageNameRegex = /^(?:@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/;
+      if (!val || !npmPackageNameRegex.test(val)) {
+        return 'The name does not respect the NPM package name rule.';
+      } else {
+        return true;
+      }
+    }
   },
   {
     type: 'input',
@@ -61,6 +70,7 @@ function generate(answers) {
   const projectDir = `${currentDirectory}/${answers.name}`;
   
   // Creating the project dir
+  console.log(`\nGenerating project in ${chalk.blue(projectDir)}\n`);
   fs.mkdirSync(projectDir);
 
   // Getting the templates
@@ -73,7 +83,7 @@ function generate(answers) {
 
   // Webpack config
 
-  console.log('=> Copying files');
+  console.log('\t* Copying files...');
   const webpackTemplateFile = `webpack.${answers.tsEnabled ? 'ts' : 'js'}.${answers.isLibrary ? 'umd' : 'nolib'}`;
   helpers.moveFile(`${templateRoot}/other/${webpackTemplateFile}`, `${projectDir}/webpack.config.js`);
 
@@ -99,7 +109,7 @@ function generate(answers) {
 
   // Replacing user values
 
-  console.log('=> Replacing user values');
+  console.log('\t* Replacing user values...');
   const buildCmd = webpackTemplateFile ? 'webpack --config webpack.config.js' : 'echo \"Error: no build specified\" && exit 1'
   const mainFile = answers.tsEnabled ? 'index.ts' : 'index.js';
 
@@ -131,5 +141,10 @@ function generate(answers) {
     ]
   });
 
-  helpers.installDependencies(config.devDependencies, projectDir);
+  console.log('\t* Installing dependencies...');
+  helpers.installDependencies(config.devDependencies, projectDir)
+  .then(() => {
+    console.log('\t  Dependencies installed');
+    helpers.quickstart(answers.name);
+  });
 }
