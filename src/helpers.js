@@ -11,38 +11,41 @@ module.exports = {
      */
     setOptions(answers) {
         // Dev dependencies
-        const devDependencies = [ 'webpack', 'webpack-cli', 'codecov' ];
-    
+        const devDependencies = ['webpack', 'webpack-cli', 'codecov'];
+
         if (answers.tsEnabled) {
-        devDependencies.push('typescript', 'ts-loader');
+            devDependencies.push('typescript', 'ts-loader');
         } else {
-        devDependencies.push('babel-loader', '@babel/core', '@babel/preset-env');
+            devDependencies.push('babel-loader', '@babel/core', '@babel/preset-env');
         }
-  
+
         // Define the test command and the associated dependencies
         let testCmd;
         if (answers.testFwk === 'jest') {
-        testCmd = 'jest';
-        devDependencies.push('jest');
-        // Create babel file for transpiling (tests)
-        if (answers.isLibrary) {
-            devDependencies.push('@babel/plugin-transform-modules-commonjs');
-        }
-        if (answers.tsEnabled) {
-            devDependencies.push('ts-jest', '@types/jest');
-        }
+            testCmd = 'jest';
+            devDependencies.push('jest');
+            // Create babel file for transpiling (tests)
+            if (answers.isLibrary) {
+                devDependencies.push('@babel/plugin-transform-modules-commonjs');
+            }
+            if (answers.tsEnabled) {
+                devDependencies.push('ts-jest', '@types/jest');
+            }
         } else if (answers.testFwk === 'mocha') {
-        testCmd = 'mocha';
-        devDependencies.push('mocha', 'chai');
-        if (answers.tsEnabled) {
-            testCmd = 'mocha -r ts-node/register test/**/*.spec.ts';
-            devDependencies.push('@types/mocha', '@types/chai', 'ts-node')
-        }
+            testCmd = 'mocha';
+            devDependencies.push('mocha', 'chai');
+            if (answers.tsEnabled) {
+                testCmd = 'mocha -r ts-node/register test/**/*.spec.ts';
+                devDependencies.push('@types/mocha', '@types/chai', 'ts-node')
+            }
         } else {
-        testCmd = 'echo \"Error: no test specified\" && exit 1';
+            testCmd = 'echo \"Error: no test specified\" && exit 1';
         }
-    
-        return { devDependencies, testCmd }
+
+        return {
+            devDependencies,
+            testCmd
+        }
     },
 
     /**
@@ -61,24 +64,24 @@ module.exports = {
      * @param templateDir Directory of the templates
      * @param newProjectPath Directory of the generated project
      */
-    recurCpTemplates (currentDirectory, templateDir, newProjectPath) {
+    recurCpTemplates(currentDirectory, templateDir, newProjectPath) {
         const filesToCreate = fs.readdirSync(templateDir);
-    
+
         filesToCreate.forEach(file => {
-        const origFilePath = `${templateDir}/${file}`;
-        
-        // get stats about the current file
-        const stats = fs.statSync(origFilePath);
-    
-        if (stats.isFile()) {
-            const writePath = `${currentDirectory}/${newProjectPath}/${file}`;
-            this.moveFile(origFilePath, writePath)
-        } else if (stats.isDirectory()) {
-            fs.mkdirSync(`${currentDirectory}/${newProjectPath}/${file}`);
-            
-            // recursive call
-            this.recurCpTemplates(currentDirectory, `${templateDir}/${file}`, `${newProjectPath}/${file}`);
-        }
+            const origFilePath = `${templateDir}/${file}`;
+
+            // get stats about the current file
+            const stats = fs.statSync(origFilePath);
+
+            if (stats.isFile()) {
+                const writePath = `${currentDirectory}/${newProjectPath}/${file}`;
+                this.moveFile(origFilePath, writePath)
+            } else if (stats.isDirectory()) {
+                fs.mkdirSync(`${currentDirectory}/${newProjectPath}/${file}`);
+
+                // recursive call
+                this.recurCpTemplates(currentDirectory, `${templateDir}/${file}`, `${newProjectPath}/${file}`);
+            }
         });
     },
 
@@ -90,7 +93,7 @@ module.exports = {
     installDependencies(devDependencies, targetDir) {
         return new Promise((resolve, reject) => {
             const install = exec(`npm install -D --prefix ${targetDir} ${devDependencies.join(' ')}`);
-        
+
             install.on('close', (returnCode) => {
                 if (returnCode !== 0) {
                     console.log(chalk.red('Installation failed'));
